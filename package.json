@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "main": "app.js",
   "dependencies": {
-    "pi-pins": "~1.0.2"
+    "pigpio": "^3.3.1"
   },
-  "devDependencies": {},
+
   "scripts": {
-    "start": "node app.js"
+    "start": "./wait-for-pigpiod.sh"
   }
 }
