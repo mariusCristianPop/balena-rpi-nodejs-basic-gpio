@@ -7,6 +7,6 @@
   },
 
   "scripts": {
-    "start": "./wait-for-pigpiod.sh"
+    "start": "node app.js"
   }
 }

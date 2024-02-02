@@ -1,42 +1,26 @@
-const Gpio = require('pigpio').Gpio;
-console.log('Starting');
+let Gpio;
+try {
+    Gpio = require('pigpio').Gpio;
+    console.log("Gpio imported successfully.");
+} catch (error) {
+    console.error("Failed to import Gpio:", error);
+}
 
-var ledToggle = false;
-var led23 = new Gpio(23, {mode: Gpio.OUTPUT}),
-    led24 = new Gpio(24, {mode: Gpio.OUTPUT}),
-    led25 = new Gpio(25, {mode: Gpio.OUTPUT});
+console.log("Starting...")
 
-console.log('LEDs initialized');
+// List of GPIOs you want to toggle
+const gpios = [5, 6, 23, 24, 25, 26].map(pin => new Gpio(pin, {mode: Gpio.OUTPUT}));
 
-// Function to toggle the LEDs
-const toggleLEDs = (state) => {
-    console.log(`Toggling LEDs to ${state ? 'ON' : 'OFF'}`);
-    led23.digitalWrite(state ? 1 : 0);
-    led24.digitalWrite(state ? 1 : 0);
-    led25.digitalWrite(state ? 1 : 0);
-};
+let value = 0;
+setInterval(() => {
+    // Log the current action
+    console.log(`Toggling GPIOs to ${value === 0 ? 'OFF' : 'ON'}`);
 
-// Toggle the LEDs every 15 seconds
-setInterval(function() {
-    // Toggle the state
-    ledToggle = !ledToggle;
+    // Toggle each GPIO in the list
+    gpios.forEach(led => {
+        led.digitalWrite(value);
+        console.log(` - GPIO ${led.gpio} set to ${value === 0 ? 'LOW' : 'HIGH'}`);
+    });
 
-    // Log the current state
-    console.log(`LED state is now ${ledToggle ? 'ON' : 'OFF'}`);
-
-    // Set the LEDs state
-    toggleLEDs(ledToggle);
-}, 15000); // 15000 milliseconds = 15 seconds
-
-console.log('LED toggle interval set for every 15 seconds');
-
-// Clean up on exit
-process.on('SIGINT', () => {
-    console.log('Caught interrupt signal, cleaning up...');
-    // Ensure LEDs are turned off
-    led23.digitalWrite(0);
-    led24.digitalWrite(0);
-    led25.digitalWrite(0);
-    console.log('Cleanup complete, exiting.');
-    process.exit();
-});
+    value = value === 0 ? 1 : 0; // Toggle between 0 and 1
+}, 4000); // Toggle every 4 seconds
